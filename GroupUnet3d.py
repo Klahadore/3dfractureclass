@@ -64,7 +64,6 @@ class Up(torch.nn.Module):
     def forward(self, x, H_previous, skip_con, out_h):
         x, H1 = self.C1(x, H_previous)
         x = F.leaky_relu(x)
-        x = self.dropout(x)  
         
         x = self.rearrange1(x)
         x = self.upsample(x)
