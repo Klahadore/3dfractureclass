@@ -16,6 +16,10 @@ from metrics import calculate_metrics
 
 
 
+import torch.nn as nn
+import torch.nn.functional as F
+from einops.layers.torch import Reduce, Rearrange
+
 class Down(nn.Module):
     def __init__(self, in_channels, out_channels, lifting=False):
         super(Down, self).__init__()
@@ -26,11 +30,10 @@ class Down(nn.Module):
         else:
             self.C1 = GSeparableConvSE3(in_channels, out_channels, kernel_size=3, padding='same')
         
-        
         self.C2 = GSeparableConvSE3(out_channels, out_channels, kernel_size=3, padding='same')
         
-        
         self.pool = Reduce("b o g (h h2) (w w2) (d d2) -> b o g h w d", reduction='max', h2=2, w2=2, d2=2)
+        self.dropout = nn.Dropout(p=0.5)  
 
     def forward(self, x, H_previous):
         if self.lifting:
@@ -39,15 +42,17 @@ class Down(nn.Module):
             x, H1 = self.C1(x, H_previous)
         
         x = F.leaky_relu(x)
+        x = self.dropout(x)  
         
         x, H2 = self.C2(x, H1)
         x = F.leaky_relu(x)
+        x = self.dropout(x) 
         
         skip_con = x.clone()
         x = self.pool(x)
         
         return x, H2, skip_con
-    
+
 class Up(torch.nn.Module):
     def __init__(self, in_channels, out_channels):
         super().__init__()
@@ -56,14 +61,14 @@ class Up(torch.nn.Module):
         self.rearrange2 = Rearrange("b (o g) h w d -> b o g h w d", g=4) 
 
         self.C1 = GSeparableConvSE3(in_channels, out_channels, kernel_size=3, padding='same')
+        self.C2 = GSeparableConvSE3(out_channels, out_channels, kernel_size=3, padding='same')
 
-        self.C2 = GSeparableConvSE3(out_channels, out_channels, kernel_size=3,padding='same')
-
-        # self.concat_x = Rearrange("b i g h w d -> b i g h w d")
+        self.dropout = nn.Dropout(p=0.5)  # Add dropout layer
 
     def forward(self, x, H_previous, skip_con, out_h):
-        x, H1 = self.C1(x,  H_previous)
+        x, H1 = self.C1(x, H_previous)
         x = F.leaky_relu(x)
+        x = self.dropout(x)  
         
         x = self.rearrange1(x)
         x = self.upsample(x)
@@ -74,9 +79,9 @@ class Up(torch.nn.Module):
 
         x, H2 = self.C2(x, H1, out_H=out_h)
         x = F.leaky_relu(x)
+        x = self.dropout(x) 
         return x, H2
-        
-    
+
 class Bottleneck(nn.Module):
     def __init__(self, in_channels, out_channels):
         super().__init__()
@@ -84,13 +89,16 @@ class Bottleneck(nn.Module):
         self.C1 = GSeparableConvSE3(in_channels, out_channels, kernel_size=3, padding='same')
         self.C2 = GSeparableConvSE3(out_channels, out_channels, kernel_size=3, padding='same')
 
+        self.dropout = nn.Dropout(p=0.5)  
     def forward(self, x, H_prev):
         x, H1 = self.C1(x, H_prev)
         x = F.leaky_relu(x)
+        x = self.dropout(x)  
         x, H2 = self.C2(x, H1)
         x = F.leaky_relu(x)
-        
+        x = self.dropout(x)  
         return x, H2
+
 
 
 class GroupUnet3d(L.LightningModule):
@@ -131,7 +139,6 @@ class GroupUnet3d(L.LightningModule):
 
         x = self.pool(x)
         x = self.out(x)
-        F.softmax(x, dim=1).float()
         return x
     
     def training_step(self, batch, batch_idx):

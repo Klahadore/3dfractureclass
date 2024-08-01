@@ -13,7 +13,7 @@ from Unet3d import Unet
 
 
 train_dataset = SegDataset("./data/train/images", "./data/train/masks")
-train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True, num_workers=4)
+train_loader = DataLoader(train_dataset, batch_size=2, shuffle=True, num_workers=4)
 
 val_dataset = SegDataset("./data/val/images", "./data/val/masks")
 val_loader = DataLoader(val_dataset, batch_size=1, shuffle=False, num_workers=1)
@@ -32,7 +32,7 @@ checkpoint_callback = ModelCheckpoint(
 
 logger = TensorBoardLogger("tb_logs", name="New_GroupUnet_Small_OneBatch")
 
-trainer = Trainer(default_root_dir="Models", logger=logger, max_epochs=100, accelerator="gpu", overfit_batches=1, check_val_every_n_epoch=100, callbacks=[checkpoint_callback])
+trainer = Trainer(default_root_dir="Models", logger=logger, max_epochs=100, accelerator="gpu", check_val_every_n_epoch=100, callbacks=[checkpoint_callback])
 trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=val_loader)
 
 # model = Unet()
