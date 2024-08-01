@@ -15,7 +15,7 @@ from Unet3d import Unet
 
 
 train_dataset = SegDataset("./data/train/images", "./data/train/masks")
-train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True, num_workers=4)
+train_loader = DataLoader(train_dataset, batch_size=3, shuffle=True, num_workers=2)
 
 val_dataset = SegDataset("./data/val/images", "./data/val/masks")
 val_loader = DataLoader(val_dataset, batch_size=4, shuffle=False, num_workers=1)
