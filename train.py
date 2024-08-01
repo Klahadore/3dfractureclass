@@ -27,7 +27,7 @@ checkpoint_callback = ModelCheckpoint(
     filename="Group_working_Unet_{epoch}",
     every_n_epochs=5,
     save_last=True,
-    save_top_k=3  # Ensure this line is present for saving the top 3 checkpoints
+   # save_top_k=3  
 )
 
 logger = TensorBoardLogger("tb_logs", name="New_GroupUnet_Small_OneBatch")
