@@ -136,7 +136,7 @@ class GroupUnet3d(L.LightningModule):
         x,y = batch
         y = torch.argmax(y, dim=1)
         y_hat = self.forward(x)
-        criterion = nn.CrossEntropyLoss(weight=torch.tensor([0.26, 22.53, 22.53, 26.21]).cuda())
+        criterion = nn.CrossEntropyLoss()
         loss = criterion(y_hat, y)
         print(loss.item())
         self.log('training_loss', loss)
@@ -147,7 +147,7 @@ class GroupUnet3d(L.LightningModule):
     def validation_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self.forward(x)
-        criterion = nn.CrossEntropyLoss(weight=torch.tensor([0.26, 22.53, 22.53, 26.21]).cuda())
+        criterion = nn.CrossEntropyLoss()
         loss = criterion(y_hat, y)
         self.log('val_loss', loss)
 
