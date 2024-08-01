@@ -33,7 +33,6 @@ class Down(nn.Module):
         self.C2 = GSeparableConvSE3(out_channels, out_channels, kernel_size=3, padding='same')
         
         self.pool = Reduce("b o g (h h2) (w w2) (d d2) -> b o g h w d", reduction='max', h2=2, w2=2, d2=2)
-        self.dropout = nn.Dropout(p=0.5)  
 
     def forward(self, x, H_previous):
         if self.lifting:
@@ -46,7 +45,6 @@ class Down(nn.Module):
         
         x, H2 = self.C2(x, H1)
         x = F.leaky_relu(x)
-        x = self.dropout(x) 
         
         skip_con = x.clone()
         x = self.pool(x)
@@ -63,7 +61,6 @@ class Up(torch.nn.Module):
         self.C1 = GSeparableConvSE3(in_channels, out_channels, kernel_size=3, padding='same')
         self.C2 = GSeparableConvSE3(out_channels, out_channels, kernel_size=3, padding='same')
 
-        self.dropout = nn.Dropout(p=0.5)  # Add dropout layer
 
     def forward(self, x, H_previous, skip_con, out_h):
         x, H1 = self.C1(x, H_previous)
@@ -79,7 +76,6 @@ class Up(torch.nn.Module):
 
         x, H2 = self.C2(x, H1, out_H=out_h)
         x = F.leaky_relu(x)
-        x = self.dropout(x) 
         return x, H2
 
 class Bottleneck(nn.Module):
@@ -89,14 +85,11 @@ class Bottleneck(nn.Module):
         self.C1 = GSeparableConvSE3(in_channels, out_channels, kernel_size=3, padding='same')
         self.C2 = GSeparableConvSE3(out_channels, out_channels, kernel_size=3, padding='same')
 
-        self.dropout = nn.Dropout(p=0.5)  
     def forward(self, x, H_prev):
         x, H1 = self.C1(x, H_prev)
         x = F.leaky_relu(x)
-        x = self.dropout(x)  
         x, H2 = self.C2(x, H1)
         x = F.leaky_relu(x)
-        x = self.dropout(x)  
         return x, H2
 
 
