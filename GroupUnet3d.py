@@ -41,7 +41,6 @@ class Down(nn.Module):
             x, H1 = self.C1(x, H_previous)
         
         x = F.leaky_relu(x)
-        x = self.dropout(x)  
         
         x, H2 = self.C2(x, H1)
         x = F.leaky_relu(x)
