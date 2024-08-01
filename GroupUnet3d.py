@@ -147,7 +147,7 @@ class GroupUnet3d(L.LightningModule):
         y_hat = self.forward(x)
         criterion = nn.CrossEntropyLoss(weight=torch.tensor([0.26, 22.53, 22.53, 26.21]).cuda())
         loss = criterion(y_hat, y)
-      
+        print(loss.item())
         self.log('training_loss', loss)
 
         return loss
