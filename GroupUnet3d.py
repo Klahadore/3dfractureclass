@@ -160,7 +160,7 @@ class GroupUnet3d(L.LightningModule):
         return loss
     
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=0.01)
+        optimizer = torch.optim.Adam(self.parameters(), lr=0.0001)
         return optimizer
 
 
