@@ -24,14 +24,15 @@ model = GroupUnet3d()
 
 checkpoint_callback = ModelCheckpoint(
     dirpath="models",
-    filename="GroupUnetSmall_{epoch}",
-    every_n_epochs=5
+    filename="Group_working_Unet_{epoch}",
+    every_n_epochs=5,
+    save_last=True,
 )
 
 
 logger = TensorBoardLogger("tb_logs", name="New_GroupUnet_Small_OneBatch")
 
-trainer = Trainer(logger=logger, max_epochs=10000, accelerator="gpu", overfit_batches=1, check_val_every_n_epoch=100)
+trainer = Trainer(default_root_dir="Models", logger=logger, max_epochs=100, accelerator="gpu", overfit_batches=1, check_val_every_n_epoch=100, callbacks=[checkpoint_callback])
 trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=val_loader)
 
 # model = Unet()

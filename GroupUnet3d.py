@@ -13,6 +13,9 @@ from gconv.gnn import GMaxGroupPool, GConvSE3, GLiftingConvSE3, GSeparableConvSE
 
 from metrics import calculate_metrics
 
+
+
+
 class Down(nn.Module):
     def __init__(self, in_channels, out_channels, lifting=False):
         super(Down, self).__init__()
@@ -93,23 +96,25 @@ class Bottleneck(nn.Module):
 class GroupUnet3d(L.LightningModule):
     def __init__(self):
         super().__init__()
+        self.save_hyperparameters()
+                
+        self.down1 = Down(3, 32, lifting=True)
+        self.down2 = Down(32, 64)
+        self.down3 = Down(64, 128)
+        self.down4 = Down(128, 256)
 
-        self.down1 = Down(3, 16, lifting=True)
-        self.down2 = Down(16, 32)
-        self.down3 = Down(32, 64)
-        self.down4 = Down(64, 128)
+        self.bottleneck = Bottleneck(256, 512)
 
-        self.bottleneck = Bottleneck(128, 256)
+        self.up1 = Up(512, 256)
+        self.up2 = Up(256, 128)
+        self.up3 = Up(128, 64)
+        self.up4 = Up(64, 32)
 
-        self.up1 = Up(256, 128)
-        self.up2 = Up(128, 64)
-        self.up3 = Up(64, 32)
-        self.up4 = Up(32, 16)
 
         # self.pool = GMaxGroupPool()
         self.pool = Reduce("b c g h w d -> b c h w d", reduction="mean")
 
-        self.out = Conv3d(16, 4, kernel_size=(1,1,1), stride=1)
+        self.out = Conv3d(32, 4, kernel_size=(1,1,1), stride=1)
 
     def forward(self, x):
         x, H1, S1 = self.down1(x, None)
@@ -126,15 +131,14 @@ class GroupUnet3d(L.LightningModule):
 
         x = self.pool(x)
         x = self.out(x)
-
+        F.softmax(x, dim=1).float()
         return x
     
     def training_step(self, batch, batch_idx):
         x,y = batch
         y = torch.argmax(y, dim=1)
         y_hat = self.forward(x)
-
-        criterion = nn.CrossEntropyLoss()
+        criterion = nn.CrossEntropyLoss(weight=torch.tensor([0.26, 22.53, 22.53, 26.21]).cuda())
         loss = criterion(y_hat, y)
         print(loss.item())
         self.log('training_loss', loss)
@@ -145,7 +149,7 @@ class GroupUnet3d(L.LightningModule):
     def validation_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self.forward(x)
-        criterion = nn.CrossEntropyLoss()
+        criterion = nn.CrossEntropyLoss(weight=torch.tensor([0.26, 22.53, 22.53, 26.21]).cuda())
         loss = criterion(y_hat, y)
         self.log('val_loss', loss)
 
