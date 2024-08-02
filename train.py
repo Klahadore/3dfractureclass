@@ -38,7 +38,7 @@ trainer = Trainer(
     max_epochs=100,
     accelerator="gpu",
     check_val_every_n_epoch=1,  # Check validation every epoch
-    callbacks=[checkpoint_callback]
+    callbacks=[checkpoint_callback],
 )
 
 trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=val_loader)
