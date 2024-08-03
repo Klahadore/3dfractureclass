@@ -9,6 +9,8 @@ from einops.layers.tensorflow import Reduce
 
 from TF_GroupUnet3d import group_unet_model
 from dataloader import imageLoader
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' 
 
 def train_model():
     train_img_dir = './data/train/images/'
