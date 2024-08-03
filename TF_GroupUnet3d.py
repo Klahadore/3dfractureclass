@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-=======
+
 import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Conv3D, MaxPooling3D, concatenate, UpSampling3D, BatchNormalization, Dropout, Activation
@@ -11,7 +10,7 @@ from einops.layers.tensorflow import Reduce
 import numpy as np
 
 
-from groupy.gconv.tensorflow_gconv.splitgconv3d import gconv3d, gconv3d_util 
+from groupy.gconv.tensorflow_gconv.splitgconv3d import gconv3d, gconv3d_util
 
 kernel_initializer = 'he_uniform'
 
@@ -75,7 +74,7 @@ def group_unet_model(IMG_HEIGHT, IMG_WIDTH, IMG_DEPTH, IMG_CHANNELS, num_classes
     c5 = Dropout(0.1)(c5)
     c5 = GConv3D(256, 256, "OH", "OH")(c5)
 
-    
+
     c6 = GConv3D(256, 128, "OH", "OH")(c5)
     c6 = UpSampling3D((2,2,2))(c6)
     c6 = concatenate([c6, c4])
@@ -112,12 +111,3 @@ def group_unet_model(IMG_HEIGHT, IMG_WIDTH, IMG_DEPTH, IMG_CHANNELS, num_classes
 # model = group_unet_model(128,128,128,3,4)
 # print(model.input_shape)
 # print(model.output_shape)
-
-
-
-
-
-
-
-
->>>>>>> parent of 6f18a9b (added)
