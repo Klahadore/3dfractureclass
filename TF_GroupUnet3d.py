@@ -1,10 +1,10 @@
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
-from keras.models import Model
-from keras.layers import Input, Conv3D, MaxPooling3D, concatenate, UpSampling3D, BatchNormalization, Dropout, Activation
-from keras.optimizers import Adam
-from keras.metrics import MeanIoU
+import tensorflow as tf
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Input, Conv3D, MaxPooling3D, concatenate, UpSampling3D, BatchNormalization, Dropout, Activation
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.metrics import MeanIoU
 from einops.layers.tensorflow import Reduce
+
 
 import numpy as np
 
