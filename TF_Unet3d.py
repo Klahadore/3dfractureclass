@@ -8,7 +8,7 @@ kernel_initializer = 'he_uniform'  # Try others if you want
 
 def simple_unet_model(IMG_HEIGHT, IMG_WIDTH, IMG_DEPTH, IMG_CHANNELS, num_classes):
     # Build the model
-    s = inputs
+    s = Input
 
     # Contraction path
     c1 = Conv3D(16, (3, 3, 3), activation='relu', kernel_initializer=kernel_initializer, padding='same')(s)

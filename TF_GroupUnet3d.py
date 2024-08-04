@@ -38,10 +38,12 @@ class GConv3D(tf.keras.layers.Layer):
 
     def call(self, inputs):
         # Perform the group convolution
+        print(f"Input shape: {inputs.shape}, Expected in_channels: {self.in_channels}")
         conv_output = gconv3d(inputs, self.w, strides=[1, 1, 1, 1, 1], padding=self.padding,
                        gconv_indices=self.gconv_indices, gconv_shape_info=self.gconv_shape_info)
         if self.activation:
             conv_output = Activation(self.activation)(conv_output)
+        print(f"Output shape: {conv_output.shape}, Produced out_channels: {self.out_channels}")
         return conv_output
 
 def group_unet_model(IMG_HEIGHT, IMG_WIDTH, IMG_DEPTH, IMG_CHANNELS, num_classes):
@@ -77,26 +79,29 @@ def group_unet_model(IMG_HEIGHT, IMG_WIDTH, IMG_DEPTH, IMG_CHANNELS, num_classes
 
     c6 = GConv3D(256, 128, "OH", "OH")(c5)
     c6 = UpSampling3D((2,2,2))(c6)
-    c6 = concatenate([c6, c4])
+    #c6 = concatenate([c6, c4])
+    c6 += c4
     c6 = Dropout(0.2)(c6)
     c6 = GConv3D(128, 128, "OH", "OH")(c6)
-
     print(c6.shape)
     c7 = GConv3D(128, 64, "OH", "OH")(c6)
     c7 = UpSampling3D((2,2,2))(c7)
-    c7 = concatenate([c7, c3])
+    #c7 = concatenate([c7, c3])
+    c7 += c3
     c7 = Dropout(0.2)(c7)
     c7 = GConv3D(64, 64, "OH", "OH")(c7)
 
     c8 = GConv3D(64, 32, "OH", "OH")(c7)
     c8 = UpSampling3D((2,2,2))(c8)
-    c8 = concatenate([c8,c2])
+    #c8 = concatenate([c8,c2])
+    c8 += c2
     c8 = Dropout(0.2)(c8)
     c8 = GConv3D(32,32, "OH", "OH")(c8)
 
     c9 = GConv3D(32, 16, "OH", "OH")(c8)
     c9 = UpSampling3D((2,2,2))(c9)
-    c9 = concatenate([c9, c1])
+    #c9 = concatenate([c9, c1])
+    c9 += c1
     c9 = Dropout(0.2)(c9)
     c9 = GConv3D(16, 16, "OH", "OH")(c9)
 
