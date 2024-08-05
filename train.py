@@ -17,15 +17,15 @@ def train_model():
     # train_img_dir = '/Users/quanhuynh/Desktop/data/train/images'
     # train_mask_dir = '/Users/quanhuynh/Desktop/data/train/masks'
 
-    train_img_dir = "./data/train/images"
-    train_mask_dir = "./data/train/masks"
+    train_img_dir = "./data/train/images/"
+    train_mask_dir = "./data/train/masks/"
     train_img_list = os.listdir(train_img_dir) # List of image filenames
     train_mask_list = os.listdir(train_mask_dir)  # List of mask filenames
 
     # val_img_dir = '/Users/quanhuynh/Desktop/data/val/images'
     # val_mask_dir = '/Users/quanhuynh/Desktop/data/val/masks'
-    val_img_dir = "./data/val/images"
-    val_mask_dir = "./data/val/masks"
+    val_img_dir = "./data/val/images/"
+    val_mask_dir = "./data/val/masks/"
     val_img_list = os.listdir(val_img_dir)
     val_mask_list = os.listdir(val_mask_dir)
 
