@@ -8,18 +8,24 @@ from einops.layers.tensorflow import Reduce
 
 
 from TF_GroupUnet3d import group_unet_model
+from TF_Unet3d import simple_unet_model
 from dataloader import imageLoader
 import os
 # os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 def train_model():
-    train_img_dir = '/Users/quanhuynh/Desktop/data/train/images'
-    train_mask_dir = '/Users/quanhuynh/Desktop/data/train/masks'
+    # train_img_dir = '/Users/quanhuynh/Desktop/data/train/images'
+    # train_mask_dir = '/Users/quanhuynh/Desktop/data/train/masks'
+
+    train_img_dir = "./data/train/images"
+    train_mask_dir = "./data/train/masks"
     train_img_list = os.listdir(train_img_dir) # List of image filenames
     train_mask_list = os.listdir(train_mask_dir)  # List of mask filenames
 
-    val_img_dir = '/Users/quanhuynh/Desktop/data/val/images'
-    val_mask_dir = '/Users/quanhuynh/Desktop/data/val/masks'
+    # val_img_dir = '/Users/quanhuynh/Desktop/data/val/images'
+    # val_mask_dir = '/Users/quanhuynh/Desktop/data/val/masks'
+    val_img_dir = "./data/val/images"
+    val_mask_dir = "./data/val/masks"
     val_img_list = os.listdir(val_img_dir)
     val_mask_list = os.listdir(val_mask_dir)
 
@@ -32,8 +38,8 @@ def train_model():
     # Number of training samples
 
     with tf.device("/gpu:0"):
-        model = group_unet_model(128, 128, 128, 3, 4)
-
+     #   model = group_unet_model(128, 128, 128, 3, 4)
+        model = simple_unet_model(128, 128, 128, 3, 4)
         model.compile(optimizer=Adam(), loss='categorical_crossentropy', metrics=[MeanIoU(num_classes=4)])
         print(model.summary())
 

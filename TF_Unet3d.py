@@ -36,28 +36,28 @@ def simple_unet_model(IMG_HEIGHT, IMG_WIDTH, IMG_DEPTH, IMG_CHANNELS, num_classe
     c5 = Conv3D(256, (3, 3, 3), activation='relu', kernel_initializer=kernel_initializer, padding='same')(c5)
 
     # Expansive path
-    u6 = UpSampling3D(size=(2, 2, 2), interpolation='trilinear')(c5)
-    u6 = concatenate([u6, c4])
     c6 = Conv3D(128, (3, 3, 3), activation='relu', kernel_initializer=kernel_initializer, padding='same')(u6)
+    u6 = UpSampling3D(size=(2, 2, 2), interpolation='trilinear')(c5)
     c6 = Dropout(0.2)(c6)
+    u6 = concatenate([u6, c4])
     c6 = Conv3D(128, (3, 3, 3), activation='relu', kernel_initializer=kernel_initializer, padding='same')(c6)
 
-    u7 = UpSampling3D(size=(2, 2, 2), interpolation='trilinear')(c6)
-    u7 = concatenate([u7, c3])
     c7 = Conv3D(64, (3, 3, 3), activation='relu', kernel_initializer=kernel_initializer, padding='same')(u7)
+    u7 = UpSampling3D(size=(2, 2, 2), interpolation='trilinear')(c6)
     c7 = Dropout(0.2)(c7)
+    u7 = concatenate([u7, c3])
     c7 = Conv3D(64, (3, 3, 3), activation='relu', kernel_initializer=kernel_initializer, padding='same')(c7)
 
-    u8 = UpSampling3D(size=(2, 2, 2), interpolation='trilinear')(c7)
-    u8 = concatenate([u8, c2])
     c8 = Conv3D(32, (3, 3, 3), activation='relu', kernel_initializer=kernel_initializer, padding='same')(u8)
+    u8 = UpSampling3D(size=(2, 2, 2), interpolation='trilinear')(c7)
     c8 = Dropout(0.1)(c8)
+    u8 = concatenate([u8, c2])
     c8 = Conv3D(32, (3, 3, 3), activation='relu', kernel_initializer=kernel_initializer, padding='same')(c8)
 
-    u9 = UpSampling3D(size=(2, 2, 2), interpolation='trilinear')(c8)
-    u9 = concatenate([u9, c1])
     c9 = Conv3D(16, (3, 3, 3), activation='relu', kernel_initializer=kernel_initializer, padding='same')(u9)
+    u9 = UpSampling3D(size=(2, 2, 2), interpolation='trilinear')(c8)
     c9 = Dropout(0.1)(c9)
+    u9 = concatenate([u9, c1])
     c9 = Conv3D(16, (3, 3, 3), activation='relu', kernel_initializer=kernel_initializer, padding='same')(c9)
 
     outputs = Conv3D(num_classes, (1, 1, 1), activation='softmax')(c9)
