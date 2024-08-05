@@ -32,6 +32,8 @@ class SegDataset(Dataset):
 # run through it for testing purposes
 if __name__ == "__main__":
     from torch.utils.data import DataLoader
+    image_dir = '/Users/quanhuynh/Desktop/data/train/images'
+    mask_dir = "./Users/quanhuynh/Desktop/data/train/masks"
 
     dataset = SegDataset(image_dir, mask_dir)
 
